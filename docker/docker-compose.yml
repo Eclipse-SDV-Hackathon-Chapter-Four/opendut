@@ -1,0 +1,28 @@
+services:
+  opendut-edgar-cda:
+    build:
+      context: ./opendut-edgar
+      dockerfile: Dockerfile
+    privileged: true
+    cap_add:
+      - NET_ADMIN
+    environment:
+      - OPENDUT_EDGAR_SETUP_STRING
+    networks:
+      - testcontainer-net  # docker network
+      - testcontainer-wan  # internet
+    dns: "8.8.8.8"
+    restart: unless-stopped
+    sysctls: #necessary for NetBird: https://github.com/netbirdio/netbird/issues/2290
+      - net.ipv4.conf.all.src_valid_mark=1
+      - net.ipv4.conf.all.rp_filter=2
+
+networks:
+  testcontainer-net:
+    driver: bridge
+    internal: true
+    ipam:
+      config:
+        - subnet: 172.42.0.0/16
+  testcontainer-wan:
+

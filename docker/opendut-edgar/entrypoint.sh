@@ -1,0 +1,12 @@
+#!/bin/sh
+
+if [ -n "$OPENDUT_EDGAR_SETUP_STRING" ]; then
+  /opt/opendut-edgar/opendut-edgar setup managed --no-confirm --skip-service-run --skip-can --log-file=-
+else
+  echo "Environment variable 'OPENDUT_EDGAR_SETUP_STRING' not specified. Skipping EDGAR Setup."
+fi
+
+# Disable DNS management feature of NetBird (temporary workaround)
+sed -i 's/"DisableDNS":[[:space:]]*false/"DisableDNS": true/' /etc/opendut/edgar/netbird/config.json
+
+/opt/opendut-edgar/opendut-edgar service
